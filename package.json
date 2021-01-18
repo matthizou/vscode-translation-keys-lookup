@@ -1,0 +1,72 @@
+{
+  "name": "translation-keys-lookup",
+  "displayName": "Translation Keys Lookup",
+  "description": "See the texts associated to a translation/i18n key in your files, next to your keys, without switching context",
+  "version": "0.1.0",
+  "publisher": "Matt Izoulet",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript"
+  ],
+  "main": "./out/extension",
+  "contributes": {
+    "configuration": {
+      "title": "Translation Keys Lookup",
+      "properties": {
+        "peekTranslations.translationsFolders": {
+          "type": "string",
+          "default": "src;./packages;./resources",
+          "markdownDescription": "Path of the root folders to recursively search for translation files.  \nThey are relative to the workspace root"
+        },
+        "peekTranslations.translationsFilenames": {
+          "type": "string",
+          "default": "en.json;en.yml",
+          "markdownDescription": "Filename(s) of the file(s) containing translations, separated by semicolumns.  \nRegular expressions are not supported yet"
+        },
+        "peekTranslations.extensions": {
+          "type": "string",
+          "default": "js;jsx;ts;tsx;rb",
+          "markdownDescription": "Extensions of the files consumming i18ns keys"
+        },
+        "peekTranslations.color": {
+          "type": "string",
+          "default": "green",
+          "markdownDescription": "Color of the translation text (hex value or html color name)"
+        },
+        "peekTranslations.verbose": {
+          "type": "boolean",
+          "default": "false",
+          "markdownDescription": "Whether output logs are generated or not, in the Debug Console."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "postinstall_TEMP": "node ./node_modules/vscode/bin/install",
+    "test-ts": "npm run compile && jest out/",
+    "test": "jest",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.12.11",
+    "@types/node": "^12.0.0",
+    "typescript": "^4.1.3",
+    "@babel/preset-typescript": "^7.12.7",
+    "@types/vscode": "^1.52.0",
+    "jest": "^26.6.3",
+    "@types/jest": "^26.0.20"
+  },
+  "dependencies": {
+    "file-data-cache": "^1.0.3",
+    "ts-jest": "^26.4.4"
+  }
+}
