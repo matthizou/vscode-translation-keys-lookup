@@ -1,11 +1,11 @@
 {
   "name": "translation-keys-lookup",
   "displayName": "Translation Keys Lookup",
-  "description": "See the texts associated to a translation/i18n key in your files, next to your keys, without switching context",
-  "version": "0.1.0",
+  "description": "See the texts associated to the translation/i18n keys in your files, next to your keys, without switching context",
+  "version": "0.9.0",
   "publisher": "Matt Izoulet",
   "engines": {
-    "vscode": "^1.50.0"
+    "vscode": "^1.46.0"
   },
   "categories": [
     "Other"
@@ -19,27 +19,38 @@
     "configuration": {
       "title": "Translation Keys Lookup",
       "properties": {
-        "peekTranslations.translationsFolders": {
+        "translationKeysLookup.translationsFolders": {
           "type": "string",
           "default": "src;./packages;./resources",
-          "markdownDescription": "Path of the root folders to recursively search for translation files.  \nThey are relative to the workspace root"
+          "markdownDescription": "Path of the root folders to recursively search for translation files.  \nThey are relative to the workspace root.  \nTry to limit the number of files crawled (MAX: 5000) by providing specific paths."
         },
-        "peekTranslations.translationsFilenames": {
+        "translationKeysLookup.ignoredFolders": {
+          "type": "string",
+          "default": "node_modules,public,dist,.git,__tests__,bower_components",
+          "markdownDescription": "Folders ignored when recursively looking for translation files"
+        },
+        "translationKeysLookup.translationsFilenames": {
           "type": "string",
           "default": "en.json;en.yml",
           "markdownDescription": "Filename(s) of the file(s) containing translations, separated by semicolumns.  \nRegular expressions are not supported yet"
         },
-        "peekTranslations.extensions": {
+        "translationKeysLookup.extensions": {
           "type": "string",
           "default": "js;jsx;ts;tsx;rb",
-          "markdownDescription": "Extensions of the files consumming i18ns keys"
+          "markdownDescription": "Extensions of the files consumming i18ns keys (i.e: \"js;ts\")"
         },
-        "peekTranslations.color": {
+        "translationKeysLookup.color": {
           "type": "string",
           "default": "green",
-          "markdownDescription": "Color of the translation text (hex value or html color name)"
+          "markdownDescription": "Color of the translation text (hex value or html color name)  \n💡 Write 'random' for a bit of crazyness"
         },
-        "peekTranslations.verbose": {
+        "translationKeysLookup.keyTemplate": {
+          "type": "string",
+          "default": "MY_I18N_KEY",
+          "enum": ["MY_I18N_KEY","MY-I18N-KEY","my-i18n-key","my_i18n_key"],
+          "markdownDescription": "How do your keys looks like?  \nNote the following restrictions:  \n* A key name can only contains alpha-numerical characters and separator characters ( _ or - )  \n* A key must have at least 5 characters  \n* At least one separator character is required (no matter where)  \n"
+        },
+        "translationKeysLookup.verbose": {
           "type": "boolean",
           "default": "false",
           "markdownDescription": "Whether output logs are generated or not, in the Debug Console."
@@ -66,7 +77,7 @@
     "@types/jest": "^26.0.20"
   },
   "dependencies": {
-    "file-data-cache": "^1.0.3",
+    "file-data-cache": "2.1.1",
     "ts-jest": "^26.4.4"
   }
 }

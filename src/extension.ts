@@ -9,7 +9,7 @@ import {
 import { extname, basename, resolve } from 'path'
 import { FileDataCache } from 'file-data-cache'
 import { decorateEditor } from './decorateEditor'
-import { loadTranslations, loadTranslationFile } from './loadTranslations'
+import { loadTranslationFile } from './loadTranslations'
 import { searchForTranslationsFiles } from './searchForTranslationsFiles'
 
 // Check for new translation files
@@ -18,18 +18,27 @@ const SEARCH_FOR_TRANSLATIONS_FILES_INTERVAL = 60000
 const CACHE_INTERVAL = 5000
 
 const fileCache = new FileDataCache({
-  loadFileData: loadTranslationFile,
+  loadFileData: (filePath, fileContent) =>
+    loadTranslationFile({
+      filePath,
+      fileContent,
+      keyTemplate: settings.keyTemplate,
+    }),
   checkInterval: CACHE_INTERVAL,
   readFile: true,
 })
 
+let settings: ExtensionSettings
 let showTranslationsTimeout
 let lastSearchForI18nsFiles = 0
+let allTranslations = {}
 
 type ExtensionSettings = {
   extensions: string[]
   translationsFilenames: string[]
   translationsFolders?: string[]
+  ignoredFolders?: string[]
+  keyTemplate?: string
   verbose?: boolean
   color?: string
 }
@@ -37,15 +46,14 @@ type ExtensionSettings = {
 const toArray = (stringSettings = '') =>
   stringSettings
     .toLowerCase()
+    .replace(/,/g, ';')
     .split(';')
     .filter((ext) => ext.length)
 
 export function activate(context: ExtensionContext) {
-  let settings: ExtensionSettings
-
   function loadSettings() {
     const workspaceRoot = getWorkspaceRootPath()
-    const rawSettings = workspace.getConfiguration('peekTranslations')
+    const rawSettings = workspace.getConfiguration('translationKeysLookup')
     const res: ExtensionSettings = {
       ...rawSettings,
       translationsFilenames: toArray(rawSettings.translationsFilenames),
@@ -55,15 +63,15 @@ export function activate(context: ExtensionContext) {
       translationsFolders: toArray(
         rawSettings.translationsFolders,
       ).map((path) => resolve(workspaceRoot, path)),
+      ignoredFolders: toArray(rawSettings.ignoredFolders),
     }
-    return res
+    settings = res
+    log(`Extension Settings: ${JSON.stringify(settings)}`)
   }
 
-  settings = loadSettings()
-  log(`Extension Settings: ${JSON.stringify(settings)}`)
+  loadSettings()
 
   if (window.activeTextEditor) {
-    // console.log('Editor', window.activeTextEditor.selectionHighlightBorder)
     showTranslations(window.activeTextEditor)
   }
 
@@ -75,9 +83,9 @@ export function activate(context: ExtensionContext) {
 
   workspace.onDidChangeConfiguration(
     (e: ConfigurationChangeEvent) => {
-      settings = loadSettings()
+      loadSettings()
+      fileCache.map.clear()
       lastSearchForI18nsFiles = 0
-      log(`Extension Settings: ${JSON.stringify(settings)}`)
     },
     null,
     context.subscriptions,
@@ -117,37 +125,74 @@ export function activate(context: ExtensionContext) {
 
     showTranslationsTimeout && clearTimeout(showTranslationsTimeout)
     showTranslationsTimeout = setTimeout(() => {
+      let hasChanged = false
       const now = Date.now()
+      let i18nsFilePaths = fileCache.getPaths()
       if (
-        !lastSearchForI18nsFiles ||
-        now - lastSearchForI18nsFiles >= SEARCH_FOR_TRANSLATIONS_FILES_INTERVAL
+        now - lastSearchForI18nsFiles >=
+        SEARCH_FOR_TRANSLATIONS_FILES_INTERVAL
       ) {
-        // log(`🌲 Search root: ${rootPath}`)
-        const i18nsPaths = searchForTranslationsFiles({
+        // Recheck for new i18ns files
+        i18nsFilePaths = searchForTranslationsFiles({
           filenames: settings.translationsFilenames,
           rootPaths: settings.translationsFolders,
-        })
-
-        i18nsPaths.forEach((path) => {
-          if (!fileCache.map.has(path)) {
-            log(`Add translation file: ${path}`)
-            fileCache.map.set(path, {
-              lastModified: 0,
-              lastChecked: 0,
-              values: [],
-              fileExists: true,
-            })
-          }
+          ignoredFolders: settings.ignoredFolders,
         })
         lastSearchForI18nsFiles = now
+        fileCache.getEntries().forEach(({ path }) => {
+          if (!i18nsFilePaths.includes(path)) {
+            fileCache.map.delete(path)
+          }
+        })
       }
-      const translations = loadTranslations({ fileCache })
+      // log('🐬 fileCache.map.size', fileCache.map.size)
+      i18nsFilePaths.forEach((filePath) => fileCache.loadData(filePath))
+
+      const cacheEntries = fileCache.getEntries()
+
+      hasChanged = cacheEntries.some(({ lastCheck }) => lastCheck?.wasChanged)
+
+      if (cacheEntries.length === 0) {
+        allTranslations = {}
+      } else {
+        if (hasChanged) {
+          allTranslations = fileCache
+            .getValues()
+            .reduce((result, keyValues) => ({ ...keyValues, ...result }), {})
+          log(
+            `i18ns file(s) changed. Translations count: ${
+              Object.keys(allTranslations).length
+            }`,
+          )
+        }
+      }
+
       if (fileCache.map.get(filePath)) {
+        // Translation files aren't decorated
         return
       }
-      log(`translations.length: ${Object.keys(translations).length}`)
-      decorateEditor(editor, translations, settings.color)
+
+      const color =
+        settings.color === 'random' ? getRandomColor() : settings.color
+
+      const keys = Object.keys(allTranslations)
+      log(`translations.length: ${keys.length}`)
+      log(`translations: ${keys.slice(0, 4).join(',')}`)
+      decorateEditor({
+        editor,
+        translations: allTranslations,
+        color,
+        keyTemplate: settings.keyTemplate,
+      })
     }, 200)
+  }
+  function getRandomColor() {
+    var letters = '0123456789ABCDEF'
+    var color = '#'
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)]
+    }
+    return color
   }
 
   function getWorkspaceRootPath() {

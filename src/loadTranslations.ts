@@ -1,25 +1,37 @@
 import { extname } from 'path'
+import { getKeyTemplateInfo } from './getKeyTemplateInfo'
 
-const keyRegex: RegExp = /([A-Z0-9_]{5,})/
-const keyValueRegex = /([A-Z0-9_]{5,}):?\s+(.+)/g
+function defaultParser(code, keyTemplate) {
+  const { pattern: keyPattern, separator } = getKeyTemplateInfo(keyTemplate)
+  const keyValueRegex: RegExp = new RegExp(
+    `\\n\\s*(${keyPattern}):?\\s+(.+)`,
+    'g',
+  )
 
-function defaultParser(code) {
-  const i18nsMap = {}
+  const result = {}
   let match = keyValueRegex.exec(code)
   let key, value
   while (match) {
     key = match[1]
     value = match[2]
-    if (!i18nsMap.hasOwnProperty(key)) {
-      i18nsMap[key] = value
+    if (key.indexOf(separator) !== -1 && !result.hasOwnProperty(key)) {
+      result[key] = value
     }
     match = keyValueRegex.exec(code)
   }
-  return { ...i18nsMap }
+  return { ...result }
 }
 
-export function loadTranslationFile(filePath, fileContent): Object {
+type LoadTranslationFileConfig = {
+  filePath: string
+  fileContent: string
+  keyTemplate?: string
+}
+export function loadTranslationFile(config: LoadTranslationFileConfig): Object {
+  const { filePath, fileContent, keyTemplate } = config
+
   const extension = extname(filePath).toLowerCase()
+
   let result: Object = {}
   try {
     switch (extension) {
@@ -27,21 +39,9 @@ export function loadTranslationFile(filePath, fileContent): Object {
         result = JSON.parse(fileContent)
         break
       default:
-        result = defaultParser(fileContent)
+        result = defaultParser(fileContent, keyTemplate)
     }
   } catch (e) {}
   // console.log('Load Translation file', extension, Object.keys(result).length)
   return result
-}
-
-export function loadTranslations({ fileCache }) {
-  const keys: string[] = Array.from(fileCache.map.keys())
-  return keys.reduce((result, filePath) => {
-    const fileI18ns = fileCache.loadData(filePath)
-    if (!fileI18ns) return result
-    return {
-      ...fileI18ns,
-      ...result,
-    }
-  }, {})
 }

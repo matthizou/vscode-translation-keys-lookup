@@ -1,7 +1,7 @@
 import { existsSync, statSync, readdirSync } from 'fs'
 import { basename, join, extname } from 'path'
 
-const IGNORED_FOLDERS = [
+export const IGNORED_FOLDERS = [
   'node_modules',
   '.git',
   'tmp',
@@ -15,7 +15,10 @@ type Options = {
   extensions?: string[]
   ignoredFolders?: string[]
   filter?: Function
+  __count__?: number
 }
+
+const MAX_SEARCHED_FILES = 5000
 
 function walkRecur(fullPath, options: Options = {}, results = []) {
   try {
@@ -23,8 +26,13 @@ function walkRecur(fullPath, options: Options = {}, results = []) {
     const isDirectory = stat.isDirectory()
     // DIRECTORY
     if (isDirectory) {
+      if (options.__count__ >= MAX_SEARCHED_FILES) {
+        console.log('⚠️ Too many files')
+        return results
+      }
+
       let name = basename(fullPath)
-      if (IGNORED_FOLDERS.includes(name)) {
+      if ((options.ignoredFolders || IGNORED_FOLDERS).includes(name)) {
         return results
       }
       // Continue recursion
@@ -35,6 +43,7 @@ function walkRecur(fullPath, options: Options = {}, results = []) {
       )
     } else {
       // FILE
+      options.__count__++
       if (options.extensions) {
         const extension = extname(fullPath).replace(/^\./, '').toLowerCase()
 
@@ -66,7 +75,10 @@ function walkRecur(fullPath, options: Options = {}, results = []) {
  */
 export function getFiles(path, options: Options = {}) {
   const results = []
+  options.__count__ = 0
+  console.log('😺 ignored', options.ignoredFolders.join(';'))
   if (!existsSync(path)) return []
   walkRecur(path, options, results)
+  console.log('🔍 Count of searched files:', options.__count__)
   return results
 }
