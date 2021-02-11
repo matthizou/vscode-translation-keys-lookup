@@ -21,7 +21,7 @@
       "properties": {
         "translationKeysLookup.translationsFolders": {
           "type": "string",
-          "default": "src;./packages;./resources",
+          "default": "src;packages;resources",
           "markdownDescription": "Path of the root folders to recursively search for translation files.  \nThey are relative to the workspace root.  \nTry to limit the number of files crawled (MAX: 5000) by providing specific paths."
         },
         "translationKeysLookup.ignoredFolders": {
