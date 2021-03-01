@@ -2,7 +2,7 @@
   "name": "translation-keys-lookup",
   "displayName": "Translation Keys Lookup",
   "description": "See the texts associated to the translation/i18n keys in your files, next to your keys, without switching context",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "publisher": "Matt Izoulet",
   "engines": {
     "vscode": "^1.46.0"
@@ -21,7 +21,7 @@
       "properties": {
         "translationKeysLookup.translationsFolders": {
           "type": "string",
-          "default": "src;packages;resources",
+          "default": "src;packages;resources;translations",
           "markdownDescription": "Path of the root folders to recursively search for translation files.  \nThey are relative to the workspace root.  \nTry to limit the number of files crawled (MAX: 5000) by providing specific paths."
         },
         "translationKeysLookup.ignoredFolders": {
@@ -43,12 +43,6 @@
           "type": "string",
           "default": "green",
           "markdownDescription": "Color of the translation text (hex value or html color name)  \n💡 Write 'random' for a bit of crazyness"
-        },
-        "translationKeysLookup.keyTemplate": {
-          "type": "string",
-          "default": "MY_I18N_KEY",
-          "enum": ["MY_I18N_KEY","MY-I18N-KEY","my-i18n-key","my_i18n_key"],
-          "markdownDescription": "How do your keys looks like?  \nNote the following restrictions:  \n* A key name can only contains alpha-numerical characters and separator characters ( _ or - )  \n* A key must have at least 5 characters  \n* At least one separator character is required (no matter where)  \n"
         },
         "translationKeysLookup.verbose": {
           "type": "boolean",

@@ -22,7 +22,6 @@ const fileCache = new FileDataCache({
     loadTranslationFile({
       filePath,
       fileContent,
-      keyTemplate: settings.keyTemplate,
     }),
   checkInterval: CACHE_INTERVAL,
   readFile: true,
@@ -182,7 +181,6 @@ export function activate(context: ExtensionContext) {
         editor,
         translations: allTranslations,
         color,
-        keyTemplate: settings.keyTemplate,
       })
     }, 200)
   }

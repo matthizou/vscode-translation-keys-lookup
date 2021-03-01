@@ -1,5 +1,5 @@
 import { window, Range, Position, DecorationOptions, TextEditor } from 'vscode'
-import { getKeyTemplateInfo } from './getKeyTemplateInfo'
+import { KEY_PATTERN, hasSeparator } from './constants'
 
 const decorationType = window.createTextEditorDecorationType({})
 
@@ -14,37 +14,33 @@ export function decorateEditor({
   editor,
   translations,
   color,
-  keyTemplate = '[A-Za-z0-9_]{5,}',
 }: DecorateEditorConfig) {
   const sourceCode = editor.document.getText()
-  const { pattern: keyPattern, separator } = getKeyTemplateInfo(keyTemplate)
-  if (!keyPattern || !separator) return
-
-  const keyRegex: RegExp = new RegExp(`["'](${keyPattern})["']`)
+  const keyRegex: RegExp = new RegExp(`["'](${KEY_PATTERN})["']`)
 
   let decorationsArray: DecorationOptions[] = []
   const lines = sourceCode.split('\n')
 
-  console.log(
-    '🐬 translations: ',
-    Object.keys(translations).slice(0, 3).join(','),
-    Object.values(translations).slice(0, 3).join(','),
-  )
+  // console.log(
+  //   '🐬 translations: ',
+  //   Object.keys(translations).slice(0, 3).join(','),
+  //   Object.values(translations).slice(0, 3).join(','),
+  // )
 
   for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
     let match: RegExpExecArray = keyRegex.exec(lines[lineNumber])
     if (match && match.length > 0) {
       let potentialKey = match[1]
+      console.log(match)
+
       // console.log(
-      //   '😺 potentialKey',
+      //   '🐦 potentialKey',
       //   potentialKey,
       //   'text:',
       //   translations[potentialKey],
       // )
-      if (
-        potentialKey.indexOf(separator) !== -1 &&
-        translations[potentialKey]
-      ) {
+
+      if (hasSeparator(potentialKey) && translations[potentialKey]) {
         const decoration = {
           renderOptions: {
             after: {
