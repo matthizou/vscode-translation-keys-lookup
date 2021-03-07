@@ -12,7 +12,7 @@ export function searchForTranslationsFiles({
   rootPaths,
   ignoredFolders,
 }: SearchForTranslationsFilesOptions) {
-  console.log(`👨🏻‍💻 Check for new i18ns files`)
+  // console.log(`👨🏻‍💻 Check for new i18ns files`)
   const lowerCaseFilenames = filenames.map((f) => f.toLowerCase())
   const allI18nsPaths: string[] = rootPaths.reduce((res, rootPath) => {
     const paths = getFiles(rootPath, {
@@ -25,6 +25,6 @@ export function searchForTranslationsFiles({
     return paths.length ? [...paths, ...res] : res
   }, [])
 
-  console.log('files:', allI18nsPaths.map((f) => basename(f)).join(' ; '))
+  // console.log('files:', allI18nsPaths.map((f) => basename(f)).join(' ; '))
   return allI18nsPaths
 }

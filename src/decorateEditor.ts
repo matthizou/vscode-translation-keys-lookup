@@ -31,7 +31,7 @@ export function decorateEditor({
     let match: RegExpExecArray = keyRegex.exec(lines[lineNumber])
     if (match && match.length > 0) {
       let potentialKey = match[1]
-      console.log(match)
+      //console.log(match)
 
       // console.log(
       //   '🐦 potentialKey',

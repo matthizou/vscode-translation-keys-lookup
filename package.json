@@ -3,10 +3,28 @@
   "displayName": "Translation Keys Lookup",
   "description": "See the texts associated to the translation/i18n keys in your files, next to your keys, without switching context",
   "version": "0.9.1",
-  "publisher": "Matt Izoulet",
-  "engines": {
-    "vscode": "^1.46.0"
+  "publisher": "matthizou",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matthizou/vscode-translation-keys-lookup"
   },
+  "homepage": "https://github.com/matthizou/vscode-translation-keys-lookup",
+  "bugs": {
+    "url": "https://github.com/matthizou/vscode-translation-keys-lookup/issues"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "vscode": "^1.52.0"
+  },
+  "icon": "resources/images/logo.png",
+  "keywords": [
+    "translations",
+    "translations keys",
+    "i18n",
+    "i18n keys",
+    "internationalization",
+    "keys"
+  ],
   "categories": [
     "Other"
   ],
