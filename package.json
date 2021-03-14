@@ -2,7 +2,7 @@
   "name": "translation-keys-lookup",
   "displayName": "Translation Keys Lookup",
   "description": "See the texts associated to the translation/i18n keys in your files, next to your keys, without switching context",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "publisher": "matthizou",
   "repository": {
     "type": "git",
@@ -54,7 +54,7 @@
         },
         "translationKeysLookup.extensions": {
           "type": "string",
-          "default": "js;jsx;ts;tsx;rb",
+          "default": "js;jsx;ts;tsx;rb;py;java;",
           "markdownDescription": "Extensions of the files consumming i18ns keys (i.e: \"js;ts\")"
         },
         "translationKeysLookup.color": {
