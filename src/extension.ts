@@ -49,6 +49,8 @@ const toArray = (stringSettings = '') =>
     .split(';')
     .filter((ext) => ext.length)
 
+console.log('🙈 START 1')
+
 export function activate(context: ExtensionContext) {
   function loadSettings() {
     const workspaceRoot = getWorkspaceRootPath()
@@ -59,9 +61,9 @@ export function activate(context: ExtensionContext) {
       extensions: toArray(rawSettings.extensions).map((ext) =>
         ext[0] === '.' ? ext : `.${ext}`,
       ),
-      translationsFolders: toArray(
-        rawSettings.translationsFolders,
-      ).map((path) => resolve(workspaceRoot, path)),
+      translationsFolders: toArray(rawSettings.translationsFolders).map(
+        (path) => resolve(workspaceRoot, path),
+      ),
       ignoredFolders: toArray(rawSettings.ignoredFolders),
     }
     settings = res
