@@ -7,7 +7,7 @@ Fast, simple and light, it works everywhere - no matter the framework or the lan
 
 ![translation-keys-lookup preview](https://i.imgur.com/peRk15g.jpg)
 
-## 🔑 Keys  
+## 🔑 Keys
 
 In order differenciate potential keys from regular texts, the keys need to respect 3 conditions:
 
@@ -15,17 +15,16 @@ In order differenciate potential keys from regular texts, the keys need to respe
 - A key must have at least **6** characters
 - At least one separator character is required (no matter where)
 
- 
->  * Valid ✅  
->    * _my-i18n-key_  
->    * _MY_i18n_KEY_  
->    * _myApp.my-I18N-key_  
->  * Invalid ❌
->    * _my-i18ns-key#3_&nbsp;&nbsp; _(invalid character)_  
->    * _myI18nKey_&nbsp;&nbsp; _(no separator)_  
->    * _i-key_ &nbsp;&nbsp; (too short)
+> - Valid ✅
+>   - _my-i18n-key_
+>   - _MY_i18n_KEY_
+>   - _myApp.my-I18N-key_
+> - Invalid ❌
+>   - _my-i18ns-key#3_&nbsp;&nbsp; _(invalid character)_
+>   - _myI18nKey_&nbsp;&nbsp; _(no separator)_
+>   - _i-key_ &nbsp;&nbsp; (too short)
 
-----
+---
 
 ## ⚙️ Configuration
 
@@ -51,7 +50,7 @@ The following settings are available:
   _🤪 Write 'random' for a bit of crazyness . Or don't. That's not for everyone._
   Default values: `green`
 
-- `Translations Folders`   
+- `Translations Folders`  
   Path of the root folders to recursively search for translation files.<br/>They are relative to the workspace root.  
   Try to limit the number of files crawled (max: **5000**) by providing specific paths.  
   Default values: `src;packages;resources;translations`
@@ -60,9 +59,13 @@ The following settings are available:
   Folders ignored when the script is recursively looking for translation files
   Default values: `node_modules;public;dist;.git;__tests__`
 
+### Debugging
+
+In order to debug or add new features, run the project locally using the Run and Debug view in vscode (Shift + Cmd + D).  
+This will open a second instance of vscode (B) that you will be able to debug from your first instance (A).  
+While you interact with (B), logs will appear in the Debug Console of (A).  
+You can also set breakpoints in (A) directly from the Code Editor.
 
 ### More
+
 Any suggestion, request or help for setting up, don't hesitate to drop me an email
-
-
-

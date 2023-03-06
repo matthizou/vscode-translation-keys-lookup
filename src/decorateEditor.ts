@@ -26,7 +26,7 @@ export function decorateEditor({
   //   Object.keys(translations).slice(0, 3).join(','),
   //   Object.values(translations).slice(0, 3).join(','),
   // )
-
+  let keys = []
   for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
     let match: RegExpExecArray = keyRegex.exec(lines[lineNumber])
     if (match && match.length > 0) {
@@ -41,6 +41,7 @@ export function decorateEditor({
       // )
 
       if (hasSeparator(potentialKey) && translations[potentialKey]) {
+        keys.push(potentialKey)
         const decoration = {
           renderOptions: {
             after: {
@@ -61,6 +62,8 @@ export function decorateEditor({
       }
     }
   }
-
+  // if (keys.length) {
+  //   console.log('[translation-keys-lookup]', { keys })
+  // } else console.log('[translation-keys-lookup] No keys found')
   editor.setDecorations(decorationType, decorationsArray)
 }
